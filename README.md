@@ -36,6 +36,7 @@ Durante a análise, dois tipos de valor atípico foram encontrados e tratados de
 - **Transações com SAVEPOINT**: inserção em lote com checkpoint intermediário. Se um lote falha (ex: violação de chave primária duplicada), apenas aquele lote é revertido, sem perder lotes anteriores já confirmados; registros perdidos são automaticamente reprocessados individualmente
 - **Função customizada** registrada no banco (`conn.create_function`), equivalente conceitual a uma função `PL/pgSQL` no Postgres
 - **Auditoria de sessão**: log automático (via `sqlite3.trace_callback`) de todo comando SQL executado na sessão, com timestamp e sem necessidade de instrumentar cada célula manualmente
+- **Visualizações exploratórias** com Matplotlib (lúpulos mais usados, IBU médio por faixa de ABV), geradas a partir das próprias queries analíticas.
 
 ## Como rodar
 
