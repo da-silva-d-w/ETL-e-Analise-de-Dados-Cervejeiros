@@ -50,14 +50,14 @@ Durante a análise, dois tipos de valor atípico foram encontrados e tratados de
 
 **Versão SQLite** (mais simples, sem configuração externa):
 1. Instale as dependências: `pip install -r requirements.txt`
-2. Abra `ETL_e_Analise_de_Dados_Cervejeiros_SQLite.ipynb` no Google Colab ou Jupyter local
+2. Abra `SQLite_-_ETL_e_Analise_de_Dados_Cervejeiros.ipynb` no Google Colab ou Jupyter local
 3. Rode as células em ordem (Kernel → Restart & Run All) — os dados brutos são baixados automaticamente pelo próprio notebook
 
 **Versão PostgreSQL** (requer um banco Neon próprio):
 1. Crie um banco gratuito em [neon.tech](https://neon.tech) e copie a connection string
 2. Defina a variável de ambiente `DATABASE_URL` com essa string (localmente, num arquivo `.env`; no Colab, como um Secret chamado `DATABASE_URL`)
 3. Instale as dependências: `pip install -r requirements.txt`
-4. Abra `ETL_e_Analise_de_Dados_Cervejeiros_PostgreSQL.ipynb` e rode as células em ordem
+4. Abra `Postgres_-_ETL_e_Analise_de_Dados_Cervejeiros.ipynb` e rode as células em ordem
 
 ## Limitações conhecidas
 - Os notebooks foram projetados para execução única e sequencial, do início ao fim (Kernel → Restart & Run All). Não são idempotentes: re-executar isoladamente certas células (ex: inserção de dados de teste) pode falhar por depender de estado criado anteriormente na mesma sessão.
