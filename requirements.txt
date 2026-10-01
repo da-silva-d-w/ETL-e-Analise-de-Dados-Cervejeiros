@@ -1,3 +1,5 @@
 pandas
 gdown
 matplotlib
+psycopg2-binary
+python-dotenv

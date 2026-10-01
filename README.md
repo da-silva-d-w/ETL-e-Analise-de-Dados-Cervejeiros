@@ -8,6 +8,13 @@ Os dados vêm do **DIY Dog**, o livro de receitas open-source da cervejaria Brew
 
 Foram extraídas **415 receitas**, iterando por ID com checkpoint de progresso (retomada segura em caso de interrupção), respeitando um intervalo entre requisições para não sobrecarregar o servidor do espelho.
 
+## Duas versões disponíveis
+
+- **`Postgres_-_ETL_e_Analise_de_Dados_Cervejeiros.ipynb`** (versão atual) — roda em PostgreSQL hospedado gratuitamente no [Neon](https://neon.tech), simulando um ambiente de banco de dados real, com suporte a múltiplos usuários simultâneos.
+- **`SQLite_-_ETL_e_Analise_de_Dados_Cervejeiros.ipynb`** (versão anterior, mantida como referência) — versão original em SQLite local, mais simples de rodar sem nenhuma configuração externa.
+
+A lógica analítica e a modelagem de dados são as mesmas nas duas; o que muda é a sintaxe específica de cada banco (ver seção abaixo).
+
 ## Arquitetura do banco
 
 Dados normalizados em 4 tabelas relacionadas por chave estrangeira (`cerveja_id`):
@@ -32,29 +39,34 @@ Durante a análise, dois tipos de valor atípico foram encontrados e tratados de
 
 - **Modelagem relacional** com chaves estrangeiras e tabelas de dimensão/fato
 - **Window functions** (`ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)`) para ranking de cervejas mais amargas por faixa de temperatura de fermentação
-- **Índices e plano de execução** (`EXPLAIN QUERY PLAN`): comparação documentada de `SCAN` (varredura completa) vs. `SEARCH...USING INDEX` (busca direta) antes e depois de criar índice
+- **Índices e plano de execução**: comparação documentada de varredura completa vs. busca direta via índice, antes e depois de criar índice (`EXPLAIN QUERY PLAN` na versão SQLite; `EXPLAIN ANALYZE`, com tempo real de execução, na versão PostgreSQL)
 - **Transações com SAVEPOINT**: inserção em lote com checkpoint intermediário. Se um lote falha (ex: violação de chave primária duplicada), apenas aquele lote é revertido, sem perder lotes anteriores já confirmados; registros perdidos são automaticamente reprocessados individualmente
-- **Função customizada** registrada no banco (`conn.create_function`), equivalente conceitual a uma função `PL/pgSQL` no Postgres
-- **Auditoria de sessão**: log automático (via `sqlite3.trace_callback`) de todo comando SQL executado na sessão, com timestamp e sem necessidade de instrumentar cada célula manualmente
-- **Visualizações exploratórias** com Matplotlib (lúpulos mais usados, IBU médio por faixa de ABV), geradas a partir das próprias queries analíticas.
+- **Função customizada reutilizável dentro do SQL**: registrada em Python (`conn.create_function`) na versão SQLite; implementada como função nativa `PL/pgSQL` (`CREATE OR REPLACE FUNCTION`) na versão PostgreSQL
+- **Auditoria de sessão**: log automático de todo comando SQL executado, com timestamp, sem necessidade de instrumentar cada célula manualmente — via `sqlite3.trace_callback` na versão SQLite; via uma classe de cursor customizada (`cursor_factory`) na versão PostgreSQL
+- **Reconexão resiliente** (versão PostgreSQL): função dedicada para lidar com o encerramento automático de conexões ociosas do plano gratuito do Neon
+- **Visualizações exploratórias** com Matplotlib (lúpulos mais usados, IBU médio por faixa de ABV), geradas a partir das próprias queries analíticas
 
 ## Como rodar
 
+**Versão SQLite** (mais simples, sem configuração externa):
 1. Instale as dependências: `pip install -r requirements.txt`
-2. Abra `ETL_dados_cervejeiros.ipynb` no Google Colab ou Jupyter local
-3. Rode as células em ordem (Kernel → Restart & Run All para reprodução limpa) — os dados brutos (`cervejas_raw.jsonl`) são baixados automaticamente pelo próprio notebook
+2. Abra `ETL_e_Analise_de_Dados_Cervejeiros_SQLite.ipynb` no Google Colab ou Jupyter local
+3. Rode as células em ordem (Kernel → Restart & Run All) — os dados brutos são baixados automaticamente pelo próprio notebook
+
+**Versão PostgreSQL** (requer um banco Neon próprio):
+1. Crie um banco gratuito em [neon.tech](https://neon.tech) e copie a connection string
+2. Defina a variável de ambiente `DATABASE_URL` com essa string (localmente, num arquivo `.env`; no Colab, como um Secret chamado `DATABASE_URL`)
+3. Instale as dependências: `pip install -r requirements.txt`
+4. Abra `ETL_e_Analise_de_Dados_Cervejeiros_PostgreSQL.ipynb` e rode as células em ordem
 
 ## Limitações conhecidas
-- Este notebook foi projetado para execução única e sequencial, do início ao fim
-  (Kernel → Restart & Run All). Não é idempotente: re-executar isoladamente certas
-  células (ex: inserção de dados de teste) pode falhar por depender de estado
-  criado anteriormente na mesma sessão, como registros já inseridos.
+- Os notebooks foram projetados para execução única e sequencial, do início ao fim (Kernel → Restart & Run All). Não são idempotentes: re-executar isoladamente certas células (ex: inserção de dados de teste) pode falhar por depender de estado criado anteriormente na mesma sessão.
+- A versão PostgreSQL depende de um banco Neon no plano gratuito, que entra em modo de espera (scale to zero) após período de inatividade — a primeira consulta após um tempo parado pode demorar alguns segundos a mais.
 
 ## Próximos passos
 
-- **Migração para PostgreSQL** (hospedagem gratuita via Neon): resolve limitação de concorrência do SQLite para acesso multiusuário, alinhando o projeto com o banco de dados mais pedido em vagas de dados no mercado
-- **API de serving** com FastAPI, expondo consultas do banco (ex: busca por estilo, ranking de amargor) como endpoint público
-- Camada de visualização/BI sobre os dados já modelados
+- **API de serving** com FastAPI, expondo consultas do banco (ex: busca por estilo, ranking de amargor) como endpoint público, publicada no Render
+- Camada de visualização/BI mais completa sobre os dados já modelados
 
 ## Autor
 
