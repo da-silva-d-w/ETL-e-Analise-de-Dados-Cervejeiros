@@ -1,6 +1,6 @@
 # ETL de Dados Cervejeiros — Punk API / DIY Dog
 
-Pipeline de ETL (Extract, Transform, Load) e análise de dados construído em Python + SQL, usando dados reais e abertos de receitas de cerveja. Projeto pessoal de portfólio, com foco em modelagem relacional, qualidade de dado e SQL avançado.
+Pipeline de ETL (Extract, Transform, Load) e análise de dados construído em Python, SQL e uma API em FastAPI, usando dados reais e abertos de receitas de cerveja. Projeto pessoal de portfólio, com foco em modelagem relacional, qualidade de dado e SQL avançado.
 
 ## Fonte dos dados
 
@@ -59,7 +59,26 @@ Durante a análise, dois tipos de valor atípico foram encontrados e tratados de
 3. Instale as dependências: `pip install -r requirements.txt`
 4. Abra `Postgres_-_ETL_e_Analise_de_Dados_Cervejeiros.ipynb` e rode as células em ordem
 
+
+## API de consulta (FastAPI)
+
+O arquivo `main.py` expõe os dados do banco PostgreSQL por uma API REST, com parâmetros de ordenação (menu suspenso), quantidade de resultados e filtros. Endpoints:
+
+- `/cervejas/{id}` — dados de uma cerveja
+- `/teor_alcool` — ranking por teor alcoólico
+- `/teor_amargor` — ranking por IBU (técnico ou percebido)
+- `/lupulos` — lúpulos mais/menos usados
+- `/receitas_complexas` — receitas por quantidade de ingredientes
+- `/harmonizacoes` — pratos mais/menos recomendados
+- `/alcool_por_faixa_temperatura_de_fermentacao` — ranking de ABV por faixa de temperatura
+
+Para rodar localmente (com `DATABASE_URL` configurada no `.env`):
+
+    uvicorn main:app --reload
+
+Depois abra `http://127.0.0.1:8000/docs` para testar os endpoints pela interface interativa.
 ## Limitações conhecidas
+- Publicar a API no Render (hoje roda apenas localmente)
 - Os notebooks foram projetados para execução única e sequencial, do início ao fim (Kernel → Restart & Run All). Não são idempotentes: re-executar isoladamente certas células (ex: inserção de dados de teste) pode falhar por depender de estado criado anteriormente na mesma sessão.
 - A versão PostgreSQL depende de um banco Neon no plano gratuito, que entra em modo de espera (scale to zero) após período de inatividade — a primeira consulta após um tempo parado pode demorar alguns segundos a mais.
 
