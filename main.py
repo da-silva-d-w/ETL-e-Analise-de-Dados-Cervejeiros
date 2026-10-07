@@ -65,7 +65,7 @@ class OrdemAlcoolica(str, Enum):
 # def teor_de_alcool(ordem_da_amostragem: OrdemAlcoolica = OrdemAlcoolica.desc, amostras: int = 10): # com campos opcionais
 def teor_de_alcool( # colocando todas os campos como obrigatórios
     ordem_da_amostragem: OrdemAlcoolica = Query(..., json_schema_extra={"default": OrdemAlcoolica.desc}, description="Ordem do ranking alcoólico"), 
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top cervejas com mais/menos álcool no catálogo"""
     direcao_sql = "ASC" if ordem_da_amostragem == OrdemAlcoolica.asc else "DESC"
@@ -100,7 +100,7 @@ class TipoIBU(str, Enum):
 def teor_de_amargor( # colocando todas os campos como obrigatórios
     ordem_da_amostragem: OrdemIBU = Query(..., json_schema_extra={"default": OrdemIBU.desc}, description="Ordem do ranking de amargor"),
     metrica_de_amargor: TipoIBU = Query(..., json_schema_extra={"default": TipoIBU.percebido}, description="Escolha a métrica de amargor"),
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top cervejas com maiores/menores IBUs no catálogo"""
     direcao_sql = "ASC" if ordem_da_amostragem == OrdemIBU.asc else "DESC"
@@ -125,7 +125,7 @@ def teor_de_amargor( # colocando todas os campos como obrigatórios
 # def lupulos(ordem_da_amostragem: Ordem = Ordem.desc, amostras: int = 10): # com campos opcionais
 def lupulos( # colocando todas os campos como obrigatórios
     ordem_da_amostragem: Ordem = Query(..., json_schema_extra={"default": Ordem.desc}, description="Ordem da amostragem"), 
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top lúpulos mais/menos frequentes no catálogo"""
     direcao_sql = "ASC" if ordem_da_amostragem == Ordem.asc else "DESC"
@@ -155,7 +155,7 @@ class OrdemReceitas(str, Enum):
 # def receitas_complexas(ordem_da_amostragem: OrdemReceitas = OrdemReceitas.desc, amostras: int = 10): # com campos opcionais
 def complexidade_das_receitas( # colocando todas os campos como obrigatórios
     ordem_da_amostragem: OrdemReceitas = Query(..., json_schema_extra={"default": OrdemReceitas.desc}, description="Ordem da amostragem"), 
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top cervejas mais/menos ingredientes no catálogo"""
     direcao_sql = "ASC" if ordem_da_amostragem == OrdemReceitas.asc else "DESC"
@@ -201,7 +201,7 @@ def complexidade_das_receitas( # colocando todas os campos como obrigatórios
 # def harmonizacoes(ordem_da_amostragem: Ordem = Ordem.desc, amostras: int = 10): # com campos opcionais
 def harmonizacoes( # colocando todas os campos como obrigatórios
     ordem_da_amostragem: Ordem = Query(..., json_schema_extra={"default": Ordem.desc}, description="Ordem da amostragem"), 
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top pratos que aparecem mais/menos frequentemente como sugestões de harmonização"""
     direcao_sql = "ASC" if ordem_da_amostragem == Ordem.asc else "DESC"
@@ -236,7 +236,7 @@ class OrdemAlcool(str, Enum):
 def teor_alcoolico_por_faixa_de_temperatura_de_fermentacao( # colocando todas os campos como obrigatórios
     faixa_de_temperatura_de_fermentacao: FaixaTemperatura = Query(..., json_schema_extra={"default": FaixaTemperatura.media}, description="Faixa de temperatura de fermentação"), 
     ordem_da_amostragem: OrdemAlcool = Query(..., json_schema_extra={"default": OrdemAlcool.desc}, description="Ordem da amostragem"), 
-    amostras: int = 10
+    amostras: int = Query(10, ge=1, le=100)
 ):
     """Top cervejas que têm mais/menos álcool por faixa de temperatura de fermentação"""
     
