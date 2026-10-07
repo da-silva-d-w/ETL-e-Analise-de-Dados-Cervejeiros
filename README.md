@@ -1,6 +1,8 @@
 # ETL de Dados Cervejeiros — Punk API / DIY Dog
 
-Pipeline de ETL (Extract, Transform, Load) e análise de dados construído em Python, SQL e uma API em FastAPI, usando dados reais e abertos de receitas de cerveja. Projeto pessoal de portfólio, com foco em modelagem relacional, qualidade de dado e SQL avançado.
+🔗 **Demo online:** [API no Render (Swagger)](https://etl-e-analise-de-dados-cervejeiros.onrender.com/docs) — no plano gratuito a API "dorme" quando ocioso, então a primeira requisição pode levar cerca de um minuto.
+
+Pipeline de ETL (Extract, Transform, Load) e análise de dados construído em Python, SQL e uma API em FastAPI, usando dados reais e abertos de receitas de cerveja. Projeto pessoal de portfólio, com foco em modelagem relacional, qualidade de dado e SQL.
 
 ## Fonte dos dados
 
@@ -62,6 +64,8 @@ Durante a análise, dois tipos de valor atípico foram encontrados e tratados de
 
 ## API de consulta (FastAPI)
 
+Disponível online (Render): https://etl-e-analise-de-dados-cervejeiros.onrender.com/docs
+
 O arquivo `main.py` expõe os dados do banco PostgreSQL por uma API REST, com parâmetros de ordenação (menu suspenso), quantidade de resultados e filtros. Endpoints:
 
 - `/cervejas/{id}` — dados de uma cerveja
@@ -77,8 +81,9 @@ Para rodar localmente (com `DATABASE_URL` configurada no `.env`):
     uvicorn main:app --reload
 
 Depois abra `http://127.0.0.1:8000/docs` para testar os endpoints pela interface interativa.
+
 ## Limitações conhecidas
-- Publicar a API no Render (hoje roda apenas localmente)
+- A API roda no plano gratuito do Render, que "dorme" após um período sem uso; a primeira requisição pode levar cerca de um minuto para responder.
 - Os notebooks foram projetados para execução única e sequencial, do início ao fim (Kernel → Restart & Run All). Não são idempotentes: re-executar isoladamente certas células (ex: inserção de dados de teste) pode falhar por depender de estado criado anteriormente na mesma sessão.
 - A versão PostgreSQL depende de um banco Neon no plano gratuito, que entra em modo de espera (scale to zero) após período de inatividade — a primeira consulta após um tempo parado pode demorar alguns segundos a mais.
 
